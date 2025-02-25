@@ -194,6 +194,7 @@ int main(int argc, char *argv[]) {
         rewind(file_fd);
         syslog(LOG_INFO, "Closed connection from %s", client_addr);
         fclose(file_fd);
+        close(client_sock);
     }
 
     close(server_sock);
