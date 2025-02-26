@@ -34,10 +34,8 @@ ssize_t handle_client(int client_sock, FILE *file_fd) {
     ssize_t bytes_received;
     ssize_t total_bytes_received = 0;
 
-    while (1) {
-        if (!running) {
-            break;
-        }
+    while (running) {
+
         if((bytes_received = recv(client_sock, buffer, sizeof(buffer) - 1, 0))== -1){
             if (errno == EWOULDBLOCK || errno == EAGAIN) {
                 usleep(1000000); // No data backoff for 1msec
@@ -45,7 +43,6 @@ ssize_t handle_client(int client_sock, FILE *file_fd) {
             }
             else{
                 syslog(LOG_ERR,"Failed to recieve data from the file with errono %s",strerror(errno));
-                close(client_sock);
                 return total_bytes_received;
             }
         }
@@ -172,7 +169,6 @@ int main(int argc, char *argv[]) {
 
         if (file_fd == NULL) {
         syslog(LOG_ERR, "Failed to open file: %s", strerror(errno));
-        fclose(file_fd);
         close(client_sock);
         continue;
         }
